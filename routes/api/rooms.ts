@@ -2,7 +2,7 @@
 
 import express from 'express'
 // import RoomType from '../../models/types/RoomType';
-import { createNewRoom, deleteRoom, joinRoom } from '../../controllers/RoomController';
+import { createNewRoom, deleteRoom, joinRoom, leaveRoom } from '../../controllers/RoomController';
 const router = express.Router();
 
 router.get('/test', (req, res) => {
@@ -18,8 +18,11 @@ router.post('/joinroom', (req, res) => {
   joinRoom(req.body.roomId, req.body.participant).then(room => res.json(room))
 })
 
+router.post('/leaveroom', (req, res) => {
+  leaveRoom(req.body.roomId, req.body.participantId).then(room => res.json(room))
+})
+
 router.post('/deleteroom', (req, res) => {
-  console.log(req.body)
   deleteRoom(req.body.roomId).then(room => res.json(room))
 })
 

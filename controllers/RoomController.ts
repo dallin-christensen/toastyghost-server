@@ -29,6 +29,18 @@ export async function joinRoom(roomId: string, participant: ParticipantType) {
   return updatedRoom
 }
 
+export async function leaveRoom(roomId: string, participantId: string) {
+  const room = await Room.findById(roomId)
+
+  const updatedParticipants = room.participants.filter((p: ParticipantType) => p?._id?.toString() !== participantId)
+
+  room.participants = updatedParticipants
+
+  const updatedRoom = await room.save()
+
+  return updatedRoom
+}
+
 
 // create message
 
