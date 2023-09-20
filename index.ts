@@ -1,6 +1,7 @@
 import express from 'express'
 import connectDB from './config/db'
 import books from './routes/api/books'
+import rooms from './routes/api/rooms'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 
@@ -28,3 +29,4 @@ app.listen(port, () => {
 })
 
 app.use('/api/books', books)
+app.use('/api/rooms', rooms)
