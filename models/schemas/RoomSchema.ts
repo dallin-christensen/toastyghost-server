@@ -1,10 +1,18 @@
-const MessageSchema = require('./MessageSchema')
-
 // models/Room.js
 const mongoose = require('mongoose');
 const RoomSchema = new mongoose.Schema({
   latestMessage: {
-    type: MessageSchema
+    _id: mongoose.Schema.ObjectId,
+    text: {
+      type: String,
+      trim: true,
+    },
+    participantId: {
+      type: String,
+    },
+    insertedAt: {
+      type: Date
+    }
   },
   participants: [{
     handle: {
@@ -15,7 +23,19 @@ const RoomSchema = new mongoose.Schema({
       type: String,
       required: true,
     },
-    latestMessage: MessageSchema,
+    latestMessage: {
+      _id: mongoose.Schema.ObjectId,
+      text: {
+        type: String,
+        trim: true,
+      },
+      participantId: {
+        type: String,
+      },
+      insertedAt: {
+        type: Date
+      }
+    },
   }],
   name: {
     type: String,

@@ -2,7 +2,7 @@
 
 import express from 'express'
 // import RoomType from '../../models/types/RoomType';
-import { createNewRoom, deleteRoom, joinRoom, leaveRoom } from '../../controllers/RoomController';
+import { createNewRoom, deleteRoom, insertLatestMessage, joinRoom, leaveRoom } from '../../controllers/RoomController';
 const router = express.Router();
 
 router.get('/test', (req, res) => {
@@ -26,22 +26,9 @@ router.post('/deleteroom', (req, res) => {
   deleteRoom(req.body.roomId).then(room => res.json(room))
 })
 
-// // @route GET api/books/:id
-// // @description Get single book by id
-// // @access Public
-// router.get('/:id', (req, res) => {
-//   Book.findById(req.params.id)
-//     .then((book: BookType) => res.json(book))
-//     .catch((err: any) => res.status(404).json({ nobookfound: 'No Book found' }));
-// });
-// // @route GET api/books
-// // @description add/save book
-// // @access Public
-// router.post('/', (req, res) => {
-//   Book.create(req.body)
-//     .then((book: BookType) => res.json({ msg: 'Book added successfully' }))
-//     .catch((err: any) => res.status(400).json({ error: 'Unable to add this book' }));
-// });
-
+router.post('/insertmessage', (req, res) => {
+  const { roomId, participantId, text } = req.body
+  insertLatestMessage(roomId, participantId, text).then(room => res.json(room))
+})
 
 export default router

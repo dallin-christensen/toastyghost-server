@@ -2,6 +2,7 @@
 import ParticipantType from "../models/types/ParticipantType"
 import RoomType from "../models/types/RoomType";
 const Room = require('../models/Room');
+const mongoose = require('mongoose');
 
 
 type newRoomPayload = {
@@ -43,6 +44,35 @@ export async function leaveRoom(roomId: string, participantId: string) {
 
 
 // create message
+export async function insertLatestMessage(roomId: string, participantId: string, text: string) {
+  //latestMessage
+  const latestMessage = {
+    _id: new mongoose.Types.ObjectId().toHexString(),
+    text,
+    participantId,
+    insertedAt: Date.now()
+  }
+
+  console.log({ latestMessage })
+
+  const room = await Room.findById(roomId)
+
+  room.latestMessage = latestMessage
+
+  const updatedParticipants = room.participants.reduce((acc: ParticipantType[], participant: ParticipantType) => {
+    if (participant?._id?.toString() === participantId) {
+      return [...acc, {...participant, latestMessage: latestMessage}]
+    } else {
+      return [...acc, participant]
+    }
+  }, [])
+
+  room.participants = updatedParticipants
+
+  const updatedRoom = await room.save()
+
+  return updatedRoom
+}
 
 
 // delete room
