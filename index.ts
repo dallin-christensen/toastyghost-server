@@ -5,11 +5,11 @@ import rooms from './routes/api/rooms'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 
-connectDB();
+connectDB()
 
 const app = express()
 
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ origin: true, credentials: true }))
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -17,15 +17,14 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-
-const port = process.env.PORT || 8082;
+const port = process.env.PORT || 8082
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+    res.send('Hello World!')
 })
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+    console.log(`Example app listening on port ${port}`)
 })
 
 app.use('/api/books', books)
