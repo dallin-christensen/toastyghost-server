@@ -6,8 +6,8 @@ const connectDB = async () => {
     try {
         await mongoose.connect(db)
         console.log('MongoDB is Connected...')
-    } catch (err: any) {
-        console.error(err.message)
+    } catch (err) {
+        if (err instanceof Error) console.error(err.message)
         process.exit(1)
     }
 }

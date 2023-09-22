@@ -15,7 +15,7 @@ router.get('/test', (req, res) => res.send('book route testing!'))
 router.get('/', (req, res) => {
     Book.find()
         .then((books: BookType[]) => res.json(books))
-        .catch((err: any) =>
+        .catch(() =>
             res.status(404).json({ nobooksfound: 'No Books found' })
         )
 })
@@ -25,7 +25,7 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
     Book.findById(req.params.id)
         .then((book: BookType) => res.json(book))
-        .catch((err: any) =>
+        .catch(() =>
             res.status(404).json({ nobookfound: 'No Book found' })
         )
 })
@@ -34,8 +34,8 @@ router.get('/:id', (req, res) => {
 // @access Public
 router.post('/', (req, res) => {
     Book.create(req.body)
-        .then((book: BookType) => res.json({ msg: 'Book added successfully' }))
-        .catch((err: any) =>
+        .then(() => res.json({ msg: 'Book added successfully' }))
+        .catch(() =>
             res.status(400).json({ error: 'Unable to add this book' })
         )
 })
@@ -44,8 +44,8 @@ router.post('/', (req, res) => {
 // @access Public
 router.put('/:id', (req, res) => {
     Book.findByIdAndUpdate(req.params.id, req.body)
-        .then((book: BookType) => res.json({ msg: 'Updated successfully' }))
-        .catch((err: any) =>
+        .then(() => res.json({ msg: 'Updated successfully' }))
+        .catch(() =>
             res.status(400).json({ error: 'Unable to update the Database' })
         )
 })
@@ -54,10 +54,10 @@ router.put('/:id', (req, res) => {
 // @access Public
 router.delete('/:id', (req, res) => {
     Book.findByIdAndRemove(req.params.id, req.body)
-        .then((book: BookType) =>
+        .then(() =>
             res.json({ mgs: 'Book entry deleted successfully' })
         )
-        .catch((err: any) => res.status(404).json({ error: 'No such a book' }))
+        .catch(() => res.status(404).json({ error: 'No such a book' }))
 })
 
 export default router
