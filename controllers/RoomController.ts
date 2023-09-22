@@ -13,6 +13,11 @@ export async function createNewRoom(body: newRoomPayload) {
     return room
 }
 
+export async function getRoom(roomId: string) {
+    const room = await Room.findById(roomId)
+    return room
+}
+
 // join room
 export async function joinRoom(roomId: string, participant: ParticipantType) {
     const room = await Room.findById(roomId)

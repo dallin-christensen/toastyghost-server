@@ -5,6 +5,7 @@ import express from 'express'
 import {
     createNewRoom,
     deleteRoom,
+    getRoom,
     insertLatestMessage,
     joinRoom,
     leaveRoom,
@@ -13,6 +14,10 @@ const router = express.Router()
 
 router.get('/test', (req, res) => {
     res.send('room route testing!')
+})
+
+router.get('/:id', (req, res) => {
+    getRoom(req.params.id).then((room) => res.json(room))
 })
 
 router.post('/createroom', (req, res) => {

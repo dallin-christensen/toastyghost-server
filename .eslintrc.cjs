@@ -21,6 +21,6 @@ module.exports = {
     },
     plugins: ['@typescript-eslint'],
     rules: {
-      "@typescript-eslint/no-var-requires": 0,
+        '@typescript-eslint/no-var-requires': 0,
     },
 }
