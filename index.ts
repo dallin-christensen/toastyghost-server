@@ -44,11 +44,14 @@ io.on('connection', (socket) => {
     console.log('user disconnected');
   });
 
+  socket.on("subscribe", (topic) => {
+    socket.join(topic);
+  });
+
   socket.on('insertmessage', async (payload) => {
     const { roomId, participantId, text } = payload
     const updatedRoom = await insertLatestMessage(roomId, participantId, text)
-    io.emit('messageinserted', updatedRoom)
-
+    io.to(roomId).emit("messageinserted", updatedRoom);
   });
 });
 

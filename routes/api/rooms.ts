@@ -10,7 +10,19 @@ import {
     joinRoom,
     leaveRoom,
 } from '../../controllers/RoomController'
+import createJWT from '../../auth/createJwt'
+import ParticipantType from '../../models/types/ParticipantType'
+import expressUserAuth from '../../auth/expressUserAuth'
 const router = express.Router()
+
+function assignJwtCookie(participant: ParticipantType, res: express.Response) {
+  const token = createJWT(participant)
+
+  res.cookie("jwt", token, {
+    httpOnly: true,
+    // maxAge: maxAge,
+  });
+}
 
 router.get('/test', (req, res) => {
     res.send('room route testing!')
@@ -21,13 +33,21 @@ router.get('/:id', (req, res) => {
 })
 
 router.post('/createroom', (req, res) => {
-    createNewRoom(req.body).then((room) => res.json(room))
+    createNewRoom(req.body).then((room) => {
+      const { participants } = req.body
+      assignJwtCookie(participants[0], res)
+      res.json(room)
+    })
 })
 
 router.post('/joinroom', (req, res) => {
-    joinRoom(req.body.roomId, req.body.participant).then((room) =>
-        res.json(room)
-    )
+  const { roomId, participant } = req.body
+
+  joinRoom(roomId, participant).then((room) => {
+      assignJwtCookie(participant, res)
+      res.json(room)
+    }
+  )
 })
 
 router.post('/leaveroom', (req, res) => {
@@ -40,7 +60,7 @@ router.post('/deleteroom', (req, res) => {
     deleteRoom(req.body.roomId).then((room) => res.json(room))
 })
 
-router.post('/insertmessage', (req, res) => {
+router.post('/insertmessage', expressUserAuth, (req, res) => {
     const { roomId, participantId, text } = req.body
     insertLatestMessage(roomId, participantId, text).then((room) =>
         res.json(room)
