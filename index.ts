@@ -4,8 +4,13 @@ import books from './routes/api/books'
 import rooms from './routes/api/rooms'
 import bodyParser from 'body-parser'
 import cors from 'cors'
-import { Server } from 'socket.io';
+import { Server } from 'socket.io'
 import { insertLatestMessage } from './controllers/RoomController'
+import cookieParser from 'cookie-parser'
+import ParticipantType from './models/types/ParticipantType'
+import jwt from 'jsonwebtoken'
+import { parse } from 'cookie'
+import verifyJWT from './auth/verifyJWT'
 
 connectDB()
 
@@ -18,6 +23,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 // parse application/json
 app.use(bodyParser.json())
+
+app.use(cookieParser())
 
 const port = process.env.PORT || 8082
 
@@ -32,29 +39,52 @@ const server = app.listen(port, () => {
 app.use('/api/books', books)
 app.use('/api/rooms', rooms)
 
-
 const io = new Server(server, {
-  cors: "http://localhost:5173"
-} as any);
+    cors: {
+        origin: 'http://localhost:5173',
+        methods: ['GET', 'POST'],
+        allowedHeaders: ['jwt'],
+        credentials: true,
+    },
+} as any)
 
 io.on('connection', (socket) => {
-  console.log('user connected');
+    console.log('user connected')
 
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
+    socket.on('disconnect', () => {
+        console.log('user disconnected')
+    })
 
-  socket.on("subscribe", (topic) => {
-    socket.join(topic);
-  });
+    socket.on('subscribe', (topic) => {
+        socket.join(topic)
+    })
 
-  socket.on('insertmessage', async (payload) => {
-    const { roomId, participantId, text } = payload
-    const updatedRoom = await insertLatestMessage(roomId, participantId, text)
-    io.to(roomId).emit("messageinserted", updatedRoom);
-  });
-});
+    socket.on('insertmessage', async (payload) => {
+        const { roomId, participantId, text } = payload
 
-io.on("connect_error", (err) => {
-  console.log(`connect_error due to ${err.message}`);
-});
+        const verifyCb = async (
+            decoded: string | jwt.JwtPayload | undefined
+        ) => {
+            const decodedToken = decoded as ParticipantType
+            if (decodedToken?._id === participantId) {
+                const updatedRoom = await insertLatestMessage(
+                    roomId,
+                    participantId,
+                    text
+                )
+                io.to(roomId).emit('messageinserted', updatedRoom)
+            }
+        }
+
+        if (socket.handshake.headers.cookie) {
+            const cookies = parse(socket.handshake.headers.cookie)
+            if (cookies.jwt) {
+                verifyJWT(cookies.jwt, verifyCb)
+            }
+        }
+    })
+})
+
+io.on('connect_error', (err) => {
+    console.log(`connect_error due to ${err.message}`)
+})

@@ -10,18 +10,17 @@ import {
     joinRoom,
     leaveRoom,
 } from '../../controllers/RoomController'
-import createJWT from '../../auth/createJwt'
+import createJWT from '../../auth/createJWT'
 import ParticipantType from '../../models/types/ParticipantType'
 import expressUserAuth from '../../auth/expressUserAuth'
 const router = express.Router()
 
 function assignJwtCookie(participant: ParticipantType, res: express.Response) {
-  const token = createJWT(participant)
+    const token = createJWT(participant)
 
-  res.cookie("jwt", token, {
-    httpOnly: true,
-    // maxAge: maxAge,
-  });
+    res.cookie('jwt', token, {
+        httpOnly: true,
+    })
 }
 
 router.get('/test', (req, res) => {
@@ -34,20 +33,19 @@ router.get('/:id', (req, res) => {
 
 router.post('/createroom', (req, res) => {
     createNewRoom(req.body).then((room) => {
-      const { participants } = req.body
-      assignJwtCookie(participants[0], res)
-      res.json(room)
+        const participant = room.participants[0]
+        assignJwtCookie(participant, res)
+        res.json({ room, participant })
     })
 })
 
 router.post('/joinroom', (req, res) => {
-  const { roomId, participant } = req.body
+    const { roomId, participant } = req.body
 
-  joinRoom(roomId, participant).then((room) => {
-      assignJwtCookie(participant, res)
-      res.json(room)
-    }
-  )
+    joinRoom(roomId, participant).then((room) => {
+        assignJwtCookie(participant, res)
+        res.json(room)
+    })
 })
 
 router.post('/leaveroom', (req, res) => {
