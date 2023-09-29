@@ -6,7 +6,7 @@ type RoomType = {
     participants: ParticipantType[]
     name: string
     host: string
-    startedAt: Date
+    createdAt: Date
     latestMessage?: MessageType
 }
 

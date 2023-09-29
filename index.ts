@@ -5,12 +5,14 @@ import rooms from './routes/api/rooms'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import { Server } from 'socket.io'
-import { insertLatestMessage, joinRoom } from './controllers/RoomController'
+import {
+    deleteRoom,
+    getRoom,
+    insertLatestMessage,
+    leaveRoom,
+} from './controllers/RoomController'
 import cookieParser from 'cookie-parser'
-import ParticipantType from './models/types/ParticipantType'
-import jwt from 'jsonwebtoken'
-import { parse, serialize } from 'cookie'
-import verifyJWT from './auth/verifyJWT'
+import verifyParticipant from './auth/verifyParticipant'
 
 connectDB()
 
@@ -52,37 +54,67 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
     console.log('user connected')
 
-    socket.on('disconnect', () => {
-        console.log('user disconnected')
+    socket.on('disconnect', async () => {
+        const roomId = socket.data.roomId
+        const participantId = socket.data.participantId
+
+        const successCb = async () => {
+            const updatedRoom = await leaveRoom(roomId, participantId)
+            io.to(roomId).emit('leftroom', updatedRoom, participantId)
+
+            if (updatedRoom.host === participantId) {
+                await deleteRoom(roomId)
+                io.to(roomId).emit('roomdeleted')
+            }
+        }
+
+        const failCb = () => {
+            console.error('failed authorization')
+        }
+
+        const cookie = socket.handshake.headers.cookie ?? ''
+
+        verifyParticipant(cookie, participantId, successCb, failCb)
     })
 
-    socket.on('subscribe', (topic) => {
-        socket.join(topic)
+    socket.on('subscribe', async (roomId, participantId) => {
+        socket.data.participantId = participantId
+        socket.data.roomId = roomId
+
+        const successCb = async () => {
+            socket.join(roomId)
+            const latestRoom = await getRoom(roomId)
+            io.to(roomId).emit('joinedRoom', latestRoom)
+        }
+
+        const failCb = () => {
+            console.error('failed authorization')
+        }
+
+        const cookie = socket.handshake.headers.cookie ?? ''
+
+        verifyParticipant(cookie, participantId, successCb, failCb)
     })
 
     socket.on('insertmessage', async (payload) => {
         const { roomId, participantId, text } = payload
 
-        const verifyCb = async (
-            decoded: string | jwt.JwtPayload | undefined
-        ) => {
-            const decodedToken = decoded as ParticipantType
-            if (decodedToken?._id === participantId) {
-                const updatedRoom = await insertLatestMessage(
-                    roomId,
-                    participantId,
-                    text
-                )
-                io.to(roomId).emit('messageinserted', updatedRoom)
-            }
+        const successCb = async () => {
+            const updatedRoom = await insertLatestMessage(
+                roomId,
+                participantId,
+                text
+            )
+            io.to(roomId).emit('messageinserted', updatedRoom)
         }
 
-        if (socket.handshake.headers.cookie) {
-            const cookies = parse(socket.handshake.headers.cookie)
-            if (cookies.jwt) {
-                verifyJWT(cookies.jwt, verifyCb)
-            }
+        const failCb = () => {
+            console.error('failed authorization')
         }
+
+        const cookie = socket.handshake.headers.cookie ?? ''
+
+        verifyParticipant(cookie, participantId, successCb, failCb)
     })
 })
 

@@ -9,8 +9,21 @@ type newRoomPayload = {
 }
 // create new room
 export async function createNewRoom(body: newRoomPayload) {
-    const room: RoomType = await Room.create(body)
-    return room
+    const { name, participants } = body
+    const participant = {
+        ...participants[0],
+        _id: new mongoose.Types.ObjectId().toHexString(),
+    }
+
+    const room = {
+        name,
+        participants: [participant],
+        createdAt: new Date(),
+        host: participant._id,
+    }
+
+    const createdRoom: RoomType = await Room.create(room)
+    return createdRoom
 }
 
 export async function getRoom(roomId: string) {
@@ -87,6 +100,7 @@ export async function insertLatestMessage(
 
 // delete room
 export async function deleteRoom(roomId: string) {
+    console.log('delete room fn')
     const room = await Room.findByIdAndDelete(roomId)
     return room
 }
