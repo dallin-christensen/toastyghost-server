@@ -5,7 +5,7 @@ import rooms from './routes/api/rooms'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import { Server } from 'socket.io'
-import { insertLatestMessage } from './controllers/RoomController'
+import { insertLatestMessage, joinRoom } from './controllers/RoomController'
 import cookieParser from 'cookie-parser'
 import ParticipantType from './models/types/ParticipantType'
 import jwt from 'jsonwebtoken'
@@ -57,6 +57,14 @@ io.on('connection', (socket) => {
 
     socket.on('subscribe', (topic) => {
         socket.join(topic)
+    })
+
+    socket.on('joinroom', async (joinroomPayload) => {
+      const { roomId, participant } = joinroomPayload
+
+      const {room, participant: finalParticipant} = await joinRoom(roomId, participant)
+
+      socket.emit("roomjoined", { room, participant: finalParticipant })
     })
 
     socket.on('insertmessage', async (payload) => {
