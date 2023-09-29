@@ -42,10 +42,12 @@ router.post('/createroom', (req, res) => {
 router.post('/joinroom', (req, res) => {
     const { roomId, participant } = req.body
 
-    joinRoom(roomId, participant).then((room) => {
-        assignJwtCookie(participant, res)
-        res.json(room)
-    })
+    joinRoom(roomId, participant).then(
+        ({ room, participant: finalParticipant }) => {
+            assignJwtCookie(finalParticipant, res)
+            res.json({ room, participant: finalParticipant })
+        }
+    )
 })
 
 router.post('/leaveroom', (req, res) => {

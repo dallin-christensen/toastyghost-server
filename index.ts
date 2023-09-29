@@ -9,7 +9,7 @@ import { insertLatestMessage, joinRoom } from './controllers/RoomController'
 import cookieParser from 'cookie-parser'
 import ParticipantType from './models/types/ParticipantType'
 import jwt from 'jsonwebtoken'
-import { parse } from 'cookie'
+import { parse, serialize } from 'cookie'
 import verifyJWT from './auth/verifyJWT'
 
 connectDB()
@@ -46,6 +46,7 @@ const io = new Server(server, {
         allowedHeaders: ['jwt'],
         credentials: true,
     },
+    cookie: true,
 } as any)
 
 io.on('connection', (socket) => {
@@ -57,14 +58,6 @@ io.on('connection', (socket) => {
 
     socket.on('subscribe', (topic) => {
         socket.join(topic)
-    })
-
-    socket.on('joinroom', async (joinroomPayload) => {
-      const { roomId, participant } = joinroomPayload
-
-      const {room, participant: finalParticipant} = await joinRoom(roomId, participant)
-
-      socket.emit("roomjoined", { room, participant: finalParticipant })
     })
 
     socket.on('insertmessage', async (payload) => {

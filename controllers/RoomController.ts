@@ -26,7 +26,8 @@ export async function joinRoom(roomId: string, participant: ParticipantType) {
 
     const updatedRoom = await room.save()
 
-    const finalParticipant = updatedRoom.participants[updatedRoom.participants.length - 1]
+    const finalParticipant =
+        updatedRoom.participants[updatedRoom.participants.length - 1]
 
     return { room: updatedRoom, participant: finalParticipant }
 }
