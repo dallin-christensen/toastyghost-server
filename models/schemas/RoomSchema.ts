@@ -24,6 +24,14 @@ const RoomSchema = new mongoose.Schema({
                 type: String,
                 required: true,
             },
+            x: {
+                type: Number,
+                required: true,
+            },
+            y: {
+                type: Number,
+                required: true,
+            },
             latestMessage: {
                 _id: mongoose.Schema.ObjectId,
                 text: {

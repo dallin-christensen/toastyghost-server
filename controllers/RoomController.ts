@@ -1,5 +1,6 @@
 import ParticipantType from '../models/types/ParticipantType'
 import RoomType from '../models/types/RoomType'
+import genRandomNumber from '../utilities/genRandomNumber'
 const Room = require('../models/Room')
 const mongoose = require('mongoose')
 
@@ -7,11 +8,18 @@ type newRoomPayload = {
     participants: ParticipantType[]
     name: string
 }
+
 // create new room
 export async function createNewRoom(body: newRoomPayload) {
     const { name, participants } = body
+
+    const x = genRandomNumber(50, 700)
+    const y = genRandomNumber(80, 500)
+
     const participant = {
         ...participants[0],
+        x,
+        y,
         _id: new mongoose.Types.ObjectId().toHexString(),
     }
 
@@ -34,6 +42,9 @@ export async function getRoom(roomId: string) {
 // join room
 export async function joinRoom(roomId: string, participant: ParticipantType) {
     const room = await Room.findById(roomId)
+
+    participant.x = genRandomNumber(50, 700)
+    participant.y = genRandomNumber(80, 500)
 
     room.participants = [...room.participants, participant]
 
@@ -98,11 +109,34 @@ export async function insertLatestMessage(
     return updatedRoom
 }
 
+export async function updateCoordinates(
+    roomId: string,
+    participantId: string,
+    x: number,
+    y: number
+) {
+    const room = await Room.findById(roomId)
+
+    const updatedParticipants = room.participants.reduce(
+        (acc: ParticipantType[], participant: ParticipantType) => {
+            if (participant?._id?.toString() === participantId) {
+                return [...acc, { ...participant, x, y }]
+            } else {
+                return [...acc, participant]
+            }
+        },
+        []
+    )
+
+    room.participants = updatedParticipants
+
+    const updatedRoom = await room.save()
+
+    return updatedRoom
+}
+
 // delete room
 export async function deleteRoom(roomId: string) {
-    console.log('delete room fn')
     const room = await Room.findByIdAndDelete(roomId)
     return room
 }
-
-//
