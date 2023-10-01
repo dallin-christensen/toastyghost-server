@@ -60,11 +60,11 @@ io.on('connection', (socket) => {
 
         const successCb = async () => {
             const updatedRoom = await leaveRoom(roomId, participantId)
-            io.to(roomId).emit('leftroom', updatedRoom, participantId)
+            socket.to(roomId).emit('leftroom', updatedRoom, participantId)
 
             if (updatedRoom.host === participantId) {
                 await deleteRoom(roomId)
-                io.to(roomId).emit('roomdeleted')
+                socket.to(roomId).emit('roomdeleted')
             }
         }
 
@@ -84,11 +84,11 @@ io.on('connection', (socket) => {
 
         const successCb = async () => {
             const updatedRoom = await leaveRoom(roomId, participantId)
-            io.to(roomId).emit('leftroom', updatedRoom, participantId)
+            socket.to(roomId).emit('leftroom', updatedRoom, participantId)
 
             if (updatedRoom.host === participantId) {
                 await deleteRoom(roomId)
-                io.to(roomId).emit('roomdeleted')
+                socket.to(roomId).emit('roomdeleted')
             }
         }
 
@@ -108,7 +108,7 @@ io.on('connection', (socket) => {
         const successCb = async () => {
             socket.join(roomId)
             const latestRoom = await getRoom(roomId)
-            io.to(roomId).emit('joinedroom', latestRoom)
+            socket.to(roomId).emit('joinedroom', latestRoom, participantId)
         }
 
         const failCb = () => {
