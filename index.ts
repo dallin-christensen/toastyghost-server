@@ -77,6 +77,30 @@ io.on('connection', (socket) => {
         verifyParticipant(cookie, participantId, successCb, failCb)
     })
 
+    socket.on('leaveroom', async () => {
+        // TODO this is a copy of disconnect, should abstract this logic in the future
+        const roomId = socket.data.roomId
+        const participantId = socket.data.participantId
+
+        const successCb = async () => {
+            const updatedRoom = await leaveRoom(roomId, participantId)
+            io.to(roomId).emit('leftroom', updatedRoom, participantId)
+
+            if (updatedRoom.host === participantId) {
+                await deleteRoom(roomId)
+                io.to(roomId).emit('roomdeleted')
+            }
+        }
+
+        const failCb = () => {
+            console.error('failed authorization')
+        }
+
+        const cookie = socket.handshake.headers.cookie ?? ''
+
+        verifyParticipant(cookie, participantId, successCb, failCb)
+    })
+
     socket.on('subscribe', async (roomId, participantId) => {
         socket.data.participantId = participantId
         socket.data.roomId = roomId
@@ -84,7 +108,7 @@ io.on('connection', (socket) => {
         const successCb = async () => {
             socket.join(roomId)
             const latestRoom = await getRoom(roomId)
-            io.to(roomId).emit('joinedRoom', latestRoom)
+            io.to(roomId).emit('joinedroom', latestRoom)
         }
 
         const failCb = () => {
