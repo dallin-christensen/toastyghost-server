@@ -10,6 +10,7 @@ import {
     getRoom,
     insertLatestMessage,
     leaveRoom,
+    updateCoordinates,
 } from './controllers/RoomController'
 import cookieParser from 'cookie-parser'
 import verifyParticipant from './auth/verifyParticipant'
@@ -130,6 +131,28 @@ io.on('connection', (socket) => {
                 text
             )
             io.to(roomId).emit('messageinserted', updatedRoom)
+        }
+
+        const failCb = () => {
+            console.error('failed authorization')
+        }
+
+        const cookie = socket.handshake.headers.cookie ?? ''
+
+        verifyParticipant(cookie, participantId, successCb, failCb)
+    })
+
+    socket.on('updatecoordinates', async (payload) => {
+        const { roomId, participantId, x, y } = payload
+
+        const successCb = async () => {
+            const updatedRoom = await updateCoordinates(
+                roomId,
+                participantId,
+                x,
+                y
+            )
+            io.to(roomId).emit('coordinatesupdated', updatedRoom)
         }
 
         const failCb = () => {
