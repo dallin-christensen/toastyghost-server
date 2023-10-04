@@ -42,6 +42,8 @@ const server = app.listen(port, () => {
 app.use('/api/books', books)
 app.use('/api/rooms', rooms)
 
+let roomDeletionQueue: string[] = []
+
 const io = new Server(server, {
     cors: {
         origin: 'http://localhost:5173',
@@ -60,12 +62,17 @@ io.on('connection', (socket) => {
         const participantId = socket.data.participantId
 
         const successCb = async () => {
-            const updatedRoom = await leaveRoom(roomId, participantId)
-            socket.to(roomId).emit('leftroom', updatedRoom, participantId)
+            const room = await getRoom(roomId)
 
-            if (updatedRoom.host === participantId) {
-                await deleteRoom(roomId)
-                socket.to(roomId).emit('roomdeleted')
+            if (room.host === participantId) {
+                roomDeletionQueue.push(roomId)
+                setTimeout(async () => {
+                    if (roomDeletionQueue.includes(roomId)) {
+                        // if host doesn't reconnect in one minute, delete room
+                        await deleteRoom(roomId)
+                        socket.to(roomId).emit('roomdeleted')
+                    }
+                }, 60000)
             }
         }
 
@@ -110,6 +117,14 @@ io.on('connection', (socket) => {
             socket.join(roomId)
             const latestRoom = await getRoom(roomId)
             socket.to(roomId).emit('joinedroom', latestRoom, participantId)
+
+            if (
+                latestRoom.host === participantId &&
+                roomDeletionQueue.includes(roomId)
+            ) {
+                const deleteIndex = roomDeletionQueue.indexOf(roomId)
+                roomDeletionQueue.splice(deleteIndex, 1)
+            }
         }
 
         const failCb = () => {
