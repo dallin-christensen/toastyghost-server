@@ -3,8 +3,12 @@ import { parse } from 'cookie'
 import jwt from 'jsonwebtoken'
 import ParticipantType from '../models/types/ParticipantType'
 
+type cookieType = {
+    jwt: string
+}
+
 function verifyParticipant(
-    cookie: string,
+    cookie: string | cookieType,
     participantId: string,
     successCb: (decoded: ParticipantType) => void,
     failCb: (msg: string) => void
@@ -19,11 +23,15 @@ function verifyParticipant(
     }
 
     if (cookie) {
-        const cookies = parse(cookie)
-        if (cookies.jwt) {
-            verifyJWT(cookies.jwt, verifyCb)
+        if (typeof cookie === 'string') {
+            const cookies = parse(cookie)
+            if (cookies.jwt) {
+                verifyJWT(cookies.jwt, verifyCb)
+            } else {
+                failCb('unauthorized')
+            }
         } else {
-            failCb('unauthorized')
+            verifyJWT(cookie.jwt, verifyCb)
         }
     } else {
         failCb('unauthorized')

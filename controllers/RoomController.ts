@@ -76,6 +76,26 @@ export async function leaveRoom(roomId: string, participantId: string) {
     return updatedRoom
 }
 
+export async function lookupParticipantInRoom(
+    roomId: string,
+    participantId: string
+) {
+    const room = await Room.findById(roomId).catch(() => {
+        throw Error('room does not exist')
+    })
+
+    const isInRoom = room.participants.some(
+        (p: ParticipantType) => p._id?.toString() === participantId
+    )
+
+    if (isInRoom) {
+        return room
+    } else {
+        // TODO look at this again, not loving mis-matched return types
+        return 'not a participant'
+    }
+}
+
 // create message
 export async function insertLatestMessage(
     roomId: string,

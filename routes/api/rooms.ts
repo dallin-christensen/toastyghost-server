@@ -9,10 +9,12 @@ import {
     insertLatestMessage,
     joinRoom,
     leaveRoom,
+    lookupParticipantInRoom,
 } from '../../controllers/RoomController'
 import createJWT from '../../auth/createJWT'
 import ParticipantType from '../../models/types/ParticipantType'
 import expressUserAuth from '../../auth/expressUserAuth'
+import verifyParticipant from '../../auth/verifyParticipant'
 const router = express.Router()
 
 function assignJwtCookie(participant: ParticipantType, res: express.Response) {
@@ -58,6 +60,21 @@ router.post('/leaveroom', (req, res, next) => {
     leaveRoom(req.body.roomId, req.body.participantId)
         .then((room) => res.json(room))
         .catch(next)
+})
+
+router.post('/participantroomlookup', (req, res, next) => {
+    const { cookies, body } = req
+    const { roomId, participantId } = body
+
+    const succesCb = () => {
+        lookupParticipantInRoom(roomId, participantId)
+            .then((lookup) => {
+                res.json(lookup)
+            })
+            .catch(next)
+    }
+
+    verifyParticipant(cookies, participantId, succesCb, () => {})
 })
 
 router.post('/deleteroom', (req, res, next) => {
