@@ -27,44 +27,50 @@ router.get('/test', (req, res) => {
     res.send('room route testing!')
 })
 
-router.get('/:id', (req, res) => {
-    getRoom(req.params.id).then((room) => res.json(room))
+router.get('/:id', (req, res, next) => {
+    getRoom(req.params.id)
+        .then((room) => res.json(room))
+        .catch(next)
 })
 
-router.post('/createroom', (req, res) => {
-    createNewRoom(req.body).then((room) => {
-        const participant = room.participants[0]
-        assignJwtCookie(participant, res)
-        res.json({ room, participant })
-    })
+router.post('/createroom', (req, res, next) => {
+    createNewRoom(req.body)
+        .then((room) => {
+            const participant = room.participants[0]
+            assignJwtCookie(participant, res)
+            res.json({ room, participant })
+        })
+        .catch(next)
 })
 
-router.post('/joinroom', (req, res) => {
+router.post('/joinroom', (req, res, next) => {
     const { roomId, participant } = req.body
 
-    joinRoom(roomId, participant).then(
-        ({ room, participant: finalParticipant }) => {
+    joinRoom(roomId, participant)
+        .then(({ room, participant: finalParticipant }) => {
             assignJwtCookie(finalParticipant, res)
             res.json({ room, participant: finalParticipant })
-        }
-    )
+        })
+        .catch(next)
 })
 
-router.post('/leaveroom', (req, res) => {
-    leaveRoom(req.body.roomId, req.body.participantId).then((room) =>
-        res.json(room)
-    )
+router.post('/leaveroom', (req, res, next) => {
+    leaveRoom(req.body.roomId, req.body.participantId)
+        .then((room) => res.json(room))
+        .catch(next)
 })
 
-router.post('/deleteroom', (req, res) => {
-    deleteRoom(req.body.roomId).then((room) => res.json(room))
+router.post('/deleteroom', (req, res, next) => {
+    deleteRoom(req.body.roomId)
+        .then((room) => res.json(room))
+        .catch(next)
 })
 
-router.post('/insertmessage', expressUserAuth, (req, res) => {
+router.post('/insertmessage', expressUserAuth, (req, res, next) => {
     const { roomId, participantId, text } = req.body
-    insertLatestMessage(roomId, participantId, text).then((room) =>
-        res.json(room)
-    )
+    insertLatestMessage(roomId, participantId, text)
+        .then((room) => res.json(room))
+        .catch(next)
 })
 
 export default router

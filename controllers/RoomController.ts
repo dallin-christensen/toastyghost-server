@@ -35,20 +35,26 @@ export async function createNewRoom(body: newRoomPayload) {
 }
 
 export async function getRoom(roomId: string) {
-    const room = await Room.findById(roomId)
+    const room = await Room.findById(roomId).catch(() => {
+        throw Error('room does not exist')
+    })
     return room
 }
 
 // join room
 export async function joinRoom(roomId: string, participant: ParticipantType) {
-    const room = await Room.findById(roomId)
+    const room = await Room.findById(roomId).catch(() => {
+        throw Error('room does not exist')
+    })
 
     participant.x = genRandomNumber(50, 700)
     participant.y = genRandomNumber(80, 500)
 
     room.participants = [...room.participants, participant]
 
-    const updatedRoom = await room.save()
+    const updatedRoom = await room.save().catch(() => {
+        throw Error('could not save room')
+    })
 
     const finalParticipant =
         updatedRoom.participants[updatedRoom.participants.length - 1]

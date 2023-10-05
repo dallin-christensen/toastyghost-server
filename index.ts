@@ -14,6 +14,7 @@ import {
 } from './controllers/RoomController'
 import cookieParser from 'cookie-parser'
 import verifyParticipant from './auth/verifyParticipant'
+import errorHandler from './middleware/errorHander'
 
 connectDB()
 
@@ -41,6 +42,8 @@ const server = app.listen(port, () => {
 
 app.use('/api/books', books)
 app.use('/api/rooms', rooms)
+
+app.use(errorHandler)
 
 let roomDeletionQueue: string[] = []
 
