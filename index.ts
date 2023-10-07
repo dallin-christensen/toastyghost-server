@@ -15,6 +15,7 @@ import {
 import cookieParser from 'cookie-parser'
 import verifyParticipant from './auth/verifyParticipant'
 import errorHandler from './middleware/errorHander'
+import ParticipantType from './models/types/ParticipantType'
 
 connectDB()
 
@@ -47,6 +48,22 @@ app.use(errorHandler)
 
 let roomDeletionQueue: string[] = []
 
+type participantQueue = {
+    [key: string]: { participantId: string; roomId: string }
+}
+let participantDeletionQueue: participantQueue = {}
+
+const deleteRoomIdFromQueue = (roomId: string) => {
+    const deleteIndex = roomDeletionQueue.indexOf(roomId)
+    roomDeletionQueue.splice(deleteIndex, 1)
+}
+
+const deleteParticipantIdFromQueue = (participantId: string) => {
+    if (participantDeletionQueue[participantId]) {
+        delete participantDeletionQueue[participantId]
+    }
+}
+
 const io = new Server(server, {
     cors: {
         origin: 'http://localhost:5173',
@@ -67,6 +84,8 @@ io.on('connection', (socket) => {
         const successCb = async () => {
             const room = await getRoom(roomId)
 
+            // if the room host disconnects, we will need to remove the room after one minute.
+            // if re-connection happens within that time, room deletion will get cancelled.
             if (room && room.host === participantId) {
                 roomDeletionQueue.push(roomId)
                 setTimeout(async () => {
@@ -74,6 +93,30 @@ io.on('connection', (socket) => {
                         // if host doesn't reconnect in one minute, delete room
                         await deleteRoom(roomId)
                         socket.to(roomId).emit('roomdeleted')
+                        deleteRoomIdFromQueue(roomId)
+                    }
+                }, 60000)
+            }
+
+            // if a participant disconnects, assume they've left the room after one minute
+            if (room) {
+                participantDeletionQueue[participantId] = {
+                    participantId,
+                    roomId,
+                }
+                setTimeout(async () => {
+                    if (
+                        participantDeletionQueue.hasOwnProperty(participantId)
+                    ) {
+                        // if host doesn't reconnect in one minute, delete participant
+                        const updatedRoom = await leaveRoom(
+                            roomId,
+                            participantId
+                        )
+                        socket
+                            .to(roomId)
+                            .emit('leftroom', updatedRoom, participantId)
+                        deleteParticipantIdFromQueue(participantId)
                     }
                 }, 60000)
             }
@@ -121,13 +164,22 @@ io.on('connection', (socket) => {
             const latestRoom = await getRoom(roomId)
             socket.to(roomId).emit('joinedroom', latestRoom, participantId)
 
+            // checking to see if they're currently a host of a room and reconnecting, if yes, take the room out of the deletion queue
             if (
                 latestRoom &&
                 latestRoom.host === participantId &&
                 roomDeletionQueue.includes(roomId)
             ) {
-                const deleteIndex = roomDeletionQueue.indexOf(roomId)
-                roomDeletionQueue.splice(deleteIndex, 1)
+                deleteRoomIdFromQueue(roomId)
+            }
+
+            // checking to see if they're in the participant deletion queue, if yes, take out of the queue.
+            if (
+                latestRoom &&
+                latestRoom.participants.length &&
+                participantDeletionQueue[participantId]
+            ) {
+                deleteParticipantIdFromQueue(participantId)
             }
         }
 
