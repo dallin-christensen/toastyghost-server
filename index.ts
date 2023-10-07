@@ -67,7 +67,7 @@ io.on('connection', (socket) => {
         const successCb = async () => {
             const room = await getRoom(roomId)
 
-            if (room.host === participantId) {
+            if (room && room.host === participantId) {
                 roomDeletionQueue.push(roomId)
                 setTimeout(async () => {
                     if (roomDeletionQueue.includes(roomId)) {
@@ -122,6 +122,7 @@ io.on('connection', (socket) => {
             socket.to(roomId).emit('joinedroom', latestRoom, participantId)
 
             if (
+                latestRoom &&
                 latestRoom.host === participantId &&
                 roomDeletionQueue.includes(roomId)
             ) {

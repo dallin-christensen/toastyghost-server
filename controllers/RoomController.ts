@@ -2,7 +2,7 @@ import ParticipantType from '../models/types/ParticipantType'
 import RoomType from '../models/types/RoomType'
 import genRandomNumber from '../utilities/genRandomNumber'
 const Room = require('../models/Room')
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
 type newRoomPayload = {
     participants: ParticipantType[]
@@ -84,9 +84,13 @@ export async function lookupParticipantInRoom(
         throw Error('room does not exist')
     })
 
-    const isInRoom = room.participants.some(
-        (p: ParticipantType) => p._id?.toString() === participantId
-    )
+    let isInRoom = false
+
+    if (room?.participants?.length) {
+        isInRoom = room.participants.some(
+            (p: ParticipantType) => p._id?.toString() === participantId
+        )
+    }
 
     if (isInRoom) {
         return room
@@ -102,7 +106,6 @@ export async function insertLatestMessage(
     participantId: string,
     text: string
 ) {
-    //latestMessage
     const latestMessage = {
         _id: new mongoose.Types.ObjectId().toHexString(),
         text,
@@ -110,7 +113,9 @@ export async function insertLatestMessage(
         insertedAt: Date.now(),
     }
 
-    const room = await Room.findById(roomId)
+    const utf8roomId = Buffer.from(roomId, 'utf-8').toString()
+
+    const room = await Room.findById(utf8roomId)
 
     room.latestMessage = latestMessage
 
