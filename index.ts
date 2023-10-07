@@ -66,9 +66,8 @@ const deleteParticipantIdFromQueue = (participantId: string) => {
 
 const io = new Server(server, {
     cors: {
-        origin: 'http://localhost:5173',
+        origin: process.env.NODE_ENV !== 'production' ? 'http://localhost:5173' : undefined,
         methods: ['GET', 'POST'],
-        allowedHeaders: ['jwt'],
         credentials: true,
     },
     cookie: true,
