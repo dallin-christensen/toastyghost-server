@@ -1,10 +1,9 @@
 import mongoose from 'mongoose'
-import config from 'config'
-const db = config.get('mongoURI') as string
+const mongoUrl = process.env.MONGO_URL as string
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(db)
+        await mongoose.connect(mongoUrl)
         console.log('MongoDB is Connected...')
     } catch (err) {
         if (err instanceof Error) console.error(err.message)
