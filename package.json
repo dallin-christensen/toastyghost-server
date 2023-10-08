@@ -4,7 +4,7 @@
     "type": "module",
     "scripts": {
         "start": "bun run --watch app/index.ts",
-        "build": "bun build ./app/index.ts --outdir ./public --target bun",
+        "build": "bun build ./api/index.ts --outdir ./public --target bun",
         "format:check": "prettier --check .",
         "format:write": "prettier --write .",
         "lint:check": "eslint .",
