@@ -15,7 +15,7 @@ import {
 import cookieParser from 'cookie-parser'
 import verifyParticipant from './auth/verifyParticipant'
 import errorHandler from './middleware/errorHander'
-import ParticipantType from './models/types/ParticipantType'
+import path from 'path'
 
 connectDB()
 
@@ -31,23 +31,7 @@ app.use(bodyParser.json())
 
 app.use(cookieParser())
 
-if (process.env.NODE_ENV === "production") {
-  const path = require("path");
-  app.use(express.static(path.resolve(__dirname, 'client', 'build')));
-  app.get("*", (req, res) => {
-      res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'),function (err) {
-          if(err) {
-              res.status(500).send(err)
-          }
-      });
-  })
-}
-
 const port = process.env.PORT || 8082
-
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
 
 const server = app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
@@ -55,6 +39,12 @@ const server = app.listen(port, () => {
 
 app.use('/api/books', books)
 app.use('/api/rooms', rooms)
+
+// serving the SPA
+app.use(express.static(__dirname + '/client'))
+app.get('*', function (request, response) {
+    response.sendFile(path.resolve(__dirname, 'client', 'index.html'))
+})
 
 app.use(errorHandler)
 
@@ -78,7 +68,10 @@ const deleteParticipantIdFromQueue = (participantId: string) => {
 
 const io = new Server(server, {
     cors: {
-        origin: process.env.NODE_ENV !== 'production' ? 'http://localhost:5173' : undefined,
+        origin:
+            process.env.NODE_ENV !== 'production'
+                ? 'http://localhost:5173'
+                : undefined,
         methods: ['GET', 'POST'],
         credentials: true,
     },
