@@ -17,6 +17,8 @@ import verifyParticipant from './auth/verifyParticipant'
 import errorHandler from './middleware/errorHander'
 import path from 'path'
 
+console.log('CONSOLE LOG TEST')
+
 connectDB()
 
 const app = express()
