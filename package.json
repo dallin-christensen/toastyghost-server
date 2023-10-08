@@ -1,10 +1,10 @@
 {
     "name": "quickstart-bun",
-    "module": "index.ts",
+    "module": "app/index.ts",
     "type": "module",
     "scripts": {
-        "start": "bun run --watch index.ts",
-        "build": "bun build ./index.ts --outdir ./public --target bun",
+        "start": "bun run --watch app/index.ts",
+        "build": "bun build ./app/index.ts --outdir ./public --target bun",
         "format:check": "prettier --check .",
         "format:write": "prettier --write .",
         "lint:check": "eslint .",

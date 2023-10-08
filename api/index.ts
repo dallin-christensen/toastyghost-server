@@ -1,7 +1,7 @@
 import express from 'express'
-import connectDB from './config/db'
-import books from './routes/api/books'
-import rooms from './routes/api/rooms'
+import connectDB from '../config/db'
+import books from '../routes/api/books'
+import rooms from '../routes/api/rooms'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import { Server } from 'socket.io'
@@ -11,10 +11,10 @@ import {
     insertLatestMessage,
     leaveRoom,
     updateCoordinates,
-} from './controllers/RoomController'
+} from '../controllers/RoomController'
 import cookieParser from 'cookie-parser'
-import verifyParticipant from './auth/verifyParticipant'
-import errorHandler from './middleware/errorHander'
+import verifyParticipant from '../auth/verifyParticipant'
+import errorHandler from '../middleware/errorHander'
 import path from 'path'
 
 console.log('CONSOLE LOG TEST')
