@@ -73,6 +73,7 @@ const io = new Server(server, {
                 ? 'http://localhost:5173'
                 : undefined,
         methods: ['GET', 'POST'],
+        allowedHeaders: ['jwt'],
         credentials: true,
     },
     cookie: true,
