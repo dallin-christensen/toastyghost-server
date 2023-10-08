@@ -66,6 +66,8 @@ router.post('/participantroomlookup', (req, res, next) => {
     const { cookies, body } = req
     const { roomId, participantId } = body
 
+    console.log({ cookies })
+
     const succesCb = () => {
         lookupParticipantInRoom(roomId, participantId)
             .then((lookup) => {
@@ -74,7 +76,9 @@ router.post('/participantroomlookup', (req, res, next) => {
             .catch(next)
     }
 
-    verifyParticipant(cookies, participantId, succesCb, () => {})
+    verifyParticipant(cookies, participantId, succesCb, (err) => {
+      res.status(400).json({ msg: 'failed auth' })
+    })
 })
 
 router.post('/deleteroom', (req, res, next) => {
