@@ -1,17 +1,5 @@
 {
-    "installCommand": "curl -fsSL https://bun.sh/install | bash && ~/.bun/bin/bun install --frozen-lockfile",
-    "buildCommand": "~/.bun/bin/bun run build",
-    "version": 2,
-    "builds": [
-      {
-        "src": "index.js",
-        "use": "~/.bun/bin/bun"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "index.js"
-      }
-    ]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "curl -fsSL https://bun.sh/install | bash && ~/.bun/bin/bun install --frozen-lockfile",
+  "buildCommand": "~/.bun/bin/bun run build"
 }
