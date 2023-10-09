@@ -21,6 +21,8 @@ connectDB()
 
 const app = express()
 
+app.set("trust proxy", 1);
+
 app.use(cors({ origin: 'https://chatterblight-client.vercel.app', credentials: true }))
 
 // parse application/x-www-form-urlencoded
