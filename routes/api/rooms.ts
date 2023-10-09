@@ -74,6 +74,8 @@ router.post('/participantroomlookup', (req, res, next) => {
             .catch(next)
     }
 
+    console.log({ cookies })
+
     verifyParticipant(cookies, participantId, succesCb, (err) => {
       res.status(400).json({ msg: 'failed auth' })
     })
