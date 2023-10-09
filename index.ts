@@ -17,13 +17,20 @@ import verifyParticipant from './auth/verifyParticipant'
 import errorHandler from './middleware/errorHander'
 import path from 'path'
 
+const PROD_CLIENT_URL = "https://chatterblight-client.vercel.app"
+const DEV_CLIENT_URL = "http://localhost:5173"
+
+const CLIENT_URL = process.env.NODE_ENV === 'production'
+  ? PROD_CLIENT_URL
+  : DEV_CLIENT_URL
+
 connectDB()
 
 const app = express()
 
 app.set("trust proxy", 1);
 
-app.use(cors({ origin: 'https://chatterblight-client.vercel.app', credentials: true }))
+app.use(cors({ origin: CLIENT_URL, credentials: true }))
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -70,10 +77,7 @@ const deleteParticipantIdFromQueue = (participantId: string) => {
 
 const io = new Server(server, {
     cors: {
-        origin:
-            process.env.NODE_ENV !== 'production'
-                ? 'http://localhost:5173'
-                : undefined,
+        origin: CLIENT_URL,
         methods: ['GET', 'POST'],
         allowedHeaders: ['jwt'],
         credentials: true,
