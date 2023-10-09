@@ -21,7 +21,7 @@ function assignJwtCookie(participant: ParticipantType, res: express.Response) {
     const token = createJWT(participant)
 
     res.cookie('jwt', token, {
-        httpOnly: true,
+        httpOnly: false,
     })
 }
 

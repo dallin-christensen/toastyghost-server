@@ -22,7 +22,7 @@ connectDB()
 const app = express()
 
 // app.use(cors({ origin: 'https://chatterblight-client.vercel.app', credentials: true }))
-app.use(cors({ origin: true, credentials: true }))
+app.use(cors({ origin: "*", credentials: true }))
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
