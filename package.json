@@ -1,6 +1,6 @@
 {
     "name": "quickstart-bun",
-    "module": "app/index.ts",
+    "module": "index.ts",
     "type": "module",
     "scripts": {
         "start": "bun run --watch index.ts",
