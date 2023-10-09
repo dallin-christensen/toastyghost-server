@@ -21,7 +21,7 @@ connectDB()
 
 const app = express()
 
-app.use(cors({ origin: true, credentials: true }))
+app.use(cors({ origin: false, credentials: true }))
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
