@@ -17,7 +17,7 @@ import verifyParticipant from './auth/verifyParticipant'
 import errorHandler from './middleware/errorHander'
 import path from 'path'
 
-const PROD_CLIENT_URL = "https://chatterblight-client.vercel.app"
+const PROD_CLIENT_URL = "https://www.toastyghost.dev"
 const DEV_CLIENT_URL = "http://localhost:5173"
 
 const CLIENT_URL = process.env.NODE_ENV === 'production'
