@@ -66,8 +66,6 @@ router.post('/participantroomlookup', (req, res, next) => {
     const { cookies, body } = req
     const { roomId, participantId } = body
 
-    console.log({ cookies })
-
     const succesCb = () => {
         lookupParticipantInRoom(roomId, participantId)
             .then((lookup) => {
