@@ -1,6 +1,7 @@
 {
-    "name": "quickstart-bun",
+    "name": "toastyghost-server",
     "module": "index.ts",
+    "version": "0.1.0",
     "type": "module",
     "scripts": {
         "start": "bun run --watch index.ts",
