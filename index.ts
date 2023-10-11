@@ -17,18 +17,17 @@ import verifyParticipant from './auth/verifyParticipant'
 import errorHandler from './middleware/errorHander'
 import path from 'path'
 
-const PROD_CLIENT_URL = "https://www.toastyghost.dev"
-const DEV_CLIENT_URL = "http://localhost:5173"
+const PROD_CLIENT_URL = 'https://www.toastyghost.dev'
+const DEV_CLIENT_URL = 'http://localhost:5173'
 
-const CLIENT_URL = process.env.NODE_ENV === 'production'
-  ? PROD_CLIENT_URL
-  : DEV_CLIENT_URL
+const CLIENT_URL =
+    process.env.NODE_ENV === 'production' ? PROD_CLIENT_URL : DEV_CLIENT_URL
 
 connectDB()
 
 const app = express()
 
-app.set("trust proxy", 1);
+app.set('trust proxy', 1)
 
 app.use(cors({ origin: CLIENT_URL, credentials: true }))
 

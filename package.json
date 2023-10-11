@@ -6,9 +6,9 @@
     "scripts": {
         "start": "bun run --watch index.ts",
         "build": "bun build ./index.ts --outdir ./public --target bun",
-        "format:check": "prettier --check .",
-        "format:write": "prettier --write .",
-        "lint:check": "eslint .",
+        "prettier": "prettier --check .",
+        "prettier:fix": "prettier --write .",
+        "lint": "eslint .",
         "lint:fix": "eslint --fix ."
     },
     "devDependencies": {

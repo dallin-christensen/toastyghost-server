@@ -22,7 +22,7 @@ function assignJwtCookie(participant: ParticipantType, res: express.Response) {
 
     res.cookie('jwt', token, {
         httpOnly: true,
-        sameSite: "none",
+        sameSite: 'none',
         secure: true,
     })
 }
@@ -77,7 +77,7 @@ router.post('/participantroomlookup', (req, res, next) => {
     }
 
     verifyParticipant(cookies, participantId, succesCb, (err) => {
-      res.status(400).json({ msg: 'failed auth' })
+        res.status(400).json({ msg: 'failed auth' })
     })
 })
 
