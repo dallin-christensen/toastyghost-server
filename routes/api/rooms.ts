@@ -24,6 +24,7 @@ function assignJwtCookie(participant: ParticipantType, res: express.Response) {
         httpOnly: true,
         sameSite: 'none',
         secure: true,
+        domain: 'toastyghost.dev',
     })
 }
 
