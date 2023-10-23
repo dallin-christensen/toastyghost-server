@@ -65,6 +65,10 @@ export async function joinRoom(roomId: string, participant: ParticipantType) {
 export async function leaveRoom(roomId: string, participantId: string) {
     const room = await Room.findById(roomId)
 
+    if (!room?.participants) {
+        return room
+    }
+
     const updatedParticipants = room.participants.filter(
         (p: ParticipantType) => p?._id?.toString() !== participantId
     )
