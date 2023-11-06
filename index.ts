@@ -83,7 +83,8 @@ const io = new Server(server, {
         credentials: true,
     },
     cookie: {
-        name: "jwt",
+        domain: CLIENT_URL,
+        // name: "jwt",
         httpOnly: true,
         sameSite: 'lax',
         secure: false,
