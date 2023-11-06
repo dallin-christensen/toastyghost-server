@@ -75,18 +75,20 @@ const deleteParticipantIdFromQueue = (participantId: string) => {
 }
 
 const io = new Server(server, {
+    withCredentials: true,
     cors: {
         origin: CLIENT_URL,
         methods: ['GET', 'POST'],
         allowedHeaders: ['jwt'],
         credentials: true,
     },
-    // cookie: {
-    //     httpOnly: true,
-    //     sameSite: 'none',
-    //     secure: true,
-    // },
-    cookie: true,
+    cookie: {
+        name: "jwt",
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: true,
+    },
+    // cookie: true,
 } as any)
 
 io.on('connection', (socket) => {
