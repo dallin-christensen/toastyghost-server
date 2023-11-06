@@ -82,13 +82,13 @@ const io = new Server(server, {
         allowedHeaders: ['jwt'],
         credentials: true,
     },
-    cookie: {
-        domain: CLIENT_URL,
-        // name: "jwt",
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: true,
-    },
+    // cookie: {
+    //     domain: CLIENT_URL,
+    //     // name: "jwt",
+    //     httpOnly: true,
+    //     sameSite: 'lax',
+    //     secure: true,
+    // },
     // cookie: true,
 } as any)
 
