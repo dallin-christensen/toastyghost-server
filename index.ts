@@ -86,7 +86,7 @@ const io = new Server(server, {
         name: "jwt",
         httpOnly: true,
         sameSite: 'lax',
-        secure: true,
+        secure: false,
     },
     // cookie: true,
 } as any)
