@@ -81,7 +81,11 @@ const io = new Server(server, {
         allowedHeaders: ['jwt'],
         credentials: true,
     },
-    cookie: true,
+    cookie: {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
+    },
 } as any)
 
 io.on('connection', (socket) => {
