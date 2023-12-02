@@ -16,7 +16,7 @@ import cookieParser from 'cookie-parser'
 import verifyParticipant from './auth/verifyParticipant'
 import errorHandler from './middleware/errorHander'
 import path from 'path'
-import { serialize, parse } from "cookie";
+import { serialize, parse } from 'cookie'
 
 const PROD_CLIENT_URL = 'https://www.toastyghost.dev'
 const DEV_CLIENT_URL = 'http://localhost:5173'
@@ -80,7 +80,7 @@ const io = new Server(server, {
     cors: {
         origin: CLIENT_URL,
         methods: ['GET', 'POST'],
-        allowedHeaders: ['Content-Type','Authorization'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true,
     },
     // cookie: {
@@ -251,22 +251,17 @@ io.on('connection', (socket) => {
 
         const cookie = socket.handshake.headers.cookie ?? ''
 
-        console.log({
-          cookie,
-          headers: JSON.stringify(socket.handshake.headers)
-        })
-
         verifyParticipant(cookie, participantId, successCb, failCb)
     })
 })
 
-io.engine.on("headers", (headers: any, request: any) => {
-  if (!request.headers.cookie) return;
-  const cookies = parse(request.headers.cookie);
-  if (!cookies.randomId) {
-    headers["set-cookie"] = serialize("randomId", "abc");
-  }
-});
+io.engine.on('headers', (headers: any, request: any) => {
+    if (!request.headers.cookie) return
+    const cookies = parse(request.headers.cookie)
+    if (!cookies.randomId) {
+        headers['set-cookie'] = serialize('randomId', 'abc')
+    }
+})
 
 io.on('connect_error', (err) => {
     console.log(`connect_error due to ${err.message}`)
