@@ -1,6 +1,5 @@
 import express from 'express'
 import connectDB from './config/db'
-import books from './routes/api/books'
 import rooms from './routes/api/rooms'
 import bodyParser from 'body-parser'
 import cors from 'cors'
@@ -45,7 +44,6 @@ const server = app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
 
-app.use('/api/books', books)
 app.use('/api/rooms', rooms)
 
 // serving the SPA
@@ -248,8 +246,8 @@ io.on('connection', (socket) => {
         const cookie = socket.handshake.headers.cookie ?? ''
 
         console.log({
-          cookie,
-          headers: JSON.stringify(socket.handshake.headers)
+            cookie,
+            headers: JSON.stringify(socket.handshake.headers),
         })
 
         verifyParticipant(cookie, participantId, successCb, failCb)

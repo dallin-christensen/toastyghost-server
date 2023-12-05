@@ -1,5 +1,3 @@
-// routes/api/books.js
-
 import express from 'express'
 // import RoomType from '../../models/types/RoomType';
 import {
