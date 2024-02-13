@@ -16,7 +16,7 @@ import verifyParticipant from './auth/verifyParticipant'
 import errorHandler from './middleware/errorHander'
 import path from 'path'
 
-const PROD_CLIENT_URL = 'https://www.toastyghost.dev'
+const PROD_CLIENT_URL = 'https://toastyghost-server.onrender.com'
 const DEV_CLIENT_URL = 'http://localhost:5173'
 
 const CLIENT_URL =
