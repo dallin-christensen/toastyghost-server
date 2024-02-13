@@ -1,6 +1,5 @@
 import express from 'express'
 import connectDB from './config/db'
-import books from './routes/api/books'
 import rooms from './routes/api/rooms'
 import bodyParser from 'body-parser'
 import cors from 'cors'
@@ -18,7 +17,7 @@ import errorHandler from './middleware/errorHander'
 import path from 'path'
 import { serialize, parse } from 'cookie'
 
-const PROD_CLIENT_URL = 'https://www.toastyghost.dev'
+const PROD_CLIENT_URL = 'https://www.toastyghost.dev/'
 const DEV_CLIENT_URL = 'http://localhost:5173'
 
 const CLIENT_URL =
@@ -46,7 +45,6 @@ const server = app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
 
-app.use('/api/books', books)
 app.use('/api/rooms', rooms)
 
 // serving the SPA
