@@ -15,6 +15,7 @@ import cookieParser from 'cookie-parser'
 import verifyParticipant from './auth/verifyParticipant'
 import errorHandler from './middleware/errorHander'
 import path from 'path'
+import { serialize, parse } from 'cookie'
 
 const PROD_CLIENT_URL = 'https://www.toastyghost.dev/'
 const DEV_CLIENT_URL = 'http://localhost:5173'
@@ -73,15 +74,18 @@ const deleteParticipantIdFromQueue = (participantId: string) => {
 }
 
 const io = new Server(server, {
+    withCredentials: true,
     cors: {
         origin: CLIENT_URL,
         methods: ['GET', 'POST'],
-        allowedHeaders: ['jwt'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true,
     },
     // cookie: {
+    //     domain: CLIENT_URL,
+    //     // name: "jwt",
     //     httpOnly: true,
-    //     sameSite: 'none',
+    //     sameSite: 'lax',
     //     secure: true,
     // },
     cookie: true,
@@ -245,13 +249,16 @@ io.on('connection', (socket) => {
 
         const cookie = socket.handshake.headers.cookie ?? ''
 
-        console.log({
-            cookie,
-            headers: JSON.stringify(socket.handshake.headers),
-        })
-
         verifyParticipant(cookie, participantId, successCb, failCb)
     })
+})
+
+io.engine.on('headers', (headers: any, request: any) => {
+    if (!request.headers.cookie) return
+    const cookies = parse(request.headers.cookie)
+    if (!cookies.randomId) {
+        headers['set-cookie'] = serialize('randomId', 'abc')
+    }
 })
 
 io.on('connect_error', (err) => {

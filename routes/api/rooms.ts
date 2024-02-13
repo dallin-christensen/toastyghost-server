@@ -21,7 +21,7 @@ function assignJwtCookie(participant: ParticipantType, res: express.Response) {
     res.cookie('jwt', token, {
         httpOnly: true,
         sameSite: 'none',
-        secure: true,
+        secure: process.env.NODE_ENV === 'production',
     })
 }
 
