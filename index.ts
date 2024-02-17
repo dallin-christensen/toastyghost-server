@@ -79,11 +79,6 @@ const io = new Server(server, {
         allowedHeaders: ['jwt'],
         credentials: true,
     },
-    // cookie: {
-    //     httpOnly: true,
-    //     sameSite: 'none',
-    //     secure: true,
-    // },
     cookie: true,
 } as any)
 
@@ -244,11 +239,6 @@ io.on('connection', (socket) => {
         }
 
         const cookie = socket.handshake.headers.cookie ?? ''
-
-        console.log({
-            cookie,
-            headers: JSON.stringify(socket.handshake.headers),
-        })
 
         verifyParticipant(cookie, participantId, successCb, failCb)
     })
